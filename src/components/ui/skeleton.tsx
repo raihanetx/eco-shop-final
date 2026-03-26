@@ -15,37 +15,20 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-// Loading Page - Full screen professional loading
+// Loading Page - Simple skeleton only, no fancy animations
 function LoadingPage() {
   return (
     <div className="loading-page-container">
-      {/* Logo Animation */}
-      <div className="loading-logo mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30">
-            <i className="ri-shopping-bag-line text-white text-2xl"></i>
-          </div>
-          <span className="text-2xl font-bold text-gray-800">EcoMart</span>
+      {/* Simple Logo - No animation */}
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+          <i className="ri-shopping-bag-line text-white text-2xl"></i>
         </div>
+        <span className="text-2xl font-bold text-gray-800">EcoMart</span>
       </div>
       
-      {/* Loading Spinner */}
-      <div className="loading-spinner mb-6"></div>
-      
-      {/* Loading Text */}
-      <p className="text-gray-500 text-sm font-medium mb-4">Loading your shopping experience...</p>
-      
-      {/* Loading Dots */}
-      <div className="loading-dots">
-        <div className="loading-dot"></div>
-        <div className="loading-dot"></div>
-        <div className="loading-dot"></div>
-      </div>
-      
-      {/* Progress Bar */}
-      <div className="loading-progress mt-6">
-        <div className="loading-progress-bar"></div>
-      </div>
+      {/* Simple loading text */}
+      <p className="text-gray-500 text-sm font-medium">লোড হচ্ছে...</p>
     </div>
   )
 }
@@ -429,6 +412,64 @@ function SkeletonGrid({
   )
 }
 
+// Checkout Page Skeleton - Professional loading state
+function CheckoutSkeleton() {
+  return (
+    <div style={{ backgroundColor: '#f9fafb', minHeight: '100vh', paddingTop: '16px' }}>
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 16px 50px 16px' }}>
+        {/* Order Summary Section */}
+        <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', border: '1px solid #f0f0f0' }}>
+          {/* Section Header */}
+          <div className="skeleton-shimmer-pro" style={{ width: '180px', height: '24px', marginBottom: '20px', borderRadius: '8px' }}></div>
+          
+          {/* Product Items */}
+          {[1, 2].map((i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid #f3f4f6' }}>
+              <div className="skeleton-image" style={{ width: '60px', height: '60px', borderRadius: '12px', flexShrink: 0 }}></div>
+              <div style={{ flex: 1, marginLeft: '12px' }}>
+                <div className="skeleton-text-line" style={{ width: '70%', height: '14px', marginBottom: '8px' }}></div>
+                <div className="skeleton-text-line" style={{ width: '40%', height: '12px' }}></div>
+              </div>
+              <div className="skeleton-text-line" style={{ width: '50px', height: '14px', marginLeft: '12px' }}></div>
+            </div>
+          ))}
+          
+          {/* Summary */}
+          <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px', marginTop: '16px' }}>
+            <div className="skeleton-text-line" style={{ width: '100%', height: '14px', marginBottom: '10px' }}></div>
+            <div className="skeleton-text-line" style={{ width: '100%', height: '14px', marginBottom: '10px' }}></div>
+            <div className="skeleton-text-line" style={{ width: '60%', height: '20px', marginTop: '14px' }}></div>
+          </div>
+          
+          {/* Coupon */}
+          <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+            <div className="skeleton-text-line" style={{ flex: 1, height: '48px', borderRadius: '12px' }}></div>
+            <div className="skeleton-button" style={{ width: '80px' }}></div>
+          </div>
+        </div>
+        
+        {/* Customer Info Section */}
+        <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', border: '1px solid #f0f0f0' }}>
+          <div className="skeleton-shimmer-pro" style={{ width: '140px', height: '24px', marginBottom: '20px', borderRadius: '8px' }}></div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="skeleton-text-line" style={{ width: '100%', height: '48px', borderRadius: '12px', marginBottom: '16px' }}></div>
+          ))}
+        </div>
+        
+        {/* Payment Section */}
+        <div style={{ background: 'white', borderRadius: '16px', padding: '20px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', border: '1px solid #f0f0f0' }}>
+          <div className="skeleton-shimmer-pro" style={{ width: '160px', height: '24px', marginBottom: '20px', borderRadius: '8px' }}></div>
+          <div className="skeleton-text-line" style={{ width: '100%', height: '14px', marginBottom: '8px' }}></div>
+          <div className="skeleton-text-line" style={{ width: '80%', height: '14px' }}></div>
+        </div>
+        
+        {/* Button */}
+        <div className="skeleton-button" style={{ height: '52px', borderRadius: '12px' }}></div>
+      </div>
+    </div>
+  )
+}
+
 export { 
   Skeleton, 
   LoadingPage,
@@ -446,5 +487,6 @@ export {
   ShopPageSkeleton,
   LoadingSpinner,
   LoadingDots,
-  SkeletonGrid
+  SkeletonGrid,
+  CheckoutSkeleton
 }

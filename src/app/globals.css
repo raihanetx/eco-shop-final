@@ -130,14 +130,19 @@ body {
 .font-bangla { font-family: 'Hind Siliguri', sans-serif; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.fade-in { animation: fadeIn 0.4s ease-out forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { /* Instant appearance */ }
+@keyframes fadeIn { from { opacity: 1; } to { opacity: 1; } }
 
-/* Simple fade-in animation for header/footer when content loads */
-.animate-fade-in { animation: simpleFadeIn 0.5s ease-out forwards; }
-@keyframes simpleFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+/* Page transitions - NO ANIMATIONS, instant page loads */
+.page-fade-in {
+  /* No animation */
+}
+
+/* Simple fade-in animation - disabled for smooth page transitions */
+.animate-fade-in { /* Disabled */ }
+@keyframes simpleFadeIn { from { opacity: 1; } to { opacity: 1; } }
+.animate-fade-in-up { /* Disabled */ }
+@keyframes fadeInUp { from { opacity: 1; } to { opacity: 1; } }
 .animate-scale-in { animation: scaleIn 0.2s ease-out forwards; }
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
 .animate-bounce-slow { animation: bounceSlow 2s ease-in-out infinite; }
@@ -185,52 +190,31 @@ body {
   }
 }
 
-/* ===== CONTENT FADE-IN ANIMATION - Smooth transition when content loads ===== */
+/* ===== CONTENT FADE-IN ANIMATION - Subtle, non-intrusive ===== */
 .content-fade-in {
-  animation: contentFadeIn 0.5s ease-out forwards;
+  /* Instant appearance - no animation to prevent double-fade with page transition */
 }
 
-/* Simple fade-in for main content after loading */
+/* Simple fade-in for main content after loading - disabled for smooth transitions */
 .animate-fade-in-content {
-  animation: fadeInContent 0.4s ease-out forwards;
+  /* Disabled - page transition handles this */
 }
 
 @keyframes fadeInContent {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 @keyframes contentFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 1; transform: none; }
+  100% { opacity: 1; transform: none; }
 }
 
-/* Staggered animation for grid items */
+/* Staggered animation for grid items - very subtle, no transform */
 .content-fade-in-stagger > * {
-  opacity: 0;
-  animation: contentFadeIn 0.4s ease-out forwards;
+  opacity: 1; /* Start visible */
+  animation: none; /* No animation - instant appearance */
 }
-
-.content-fade-in-stagger > *:nth-child(1) { animation-delay: 0ms; }
-.content-fade-in-stagger > *:nth-child(2) { animation-delay: 30ms; }
-.content-fade-in-stagger > *:nth-child(3) { animation-delay: 60ms; }
-.content-fade-in-stagger > *:nth-child(4) { animation-delay: 90ms; }
-.content-fade-in-stagger > *:nth-child(5) { animation-delay: 120ms; }
-.content-fade-in-stagger > *:nth-child(6) { animation-delay: 150ms; }
-.content-fade-in-stagger > *:nth-child(7) { animation-delay: 180ms; }
-.content-fade-in-stagger > *:nth-child(8) { animation-delay: 210ms; }
-.content-fade-in-stagger > *:nth-child(9) { animation-delay: 240ms; }
-.content-fade-in-stagger > *:nth-child(10) { animation-delay: 270ms; }
 
 /* ============================================
    PROFESSIONAL SKELETON LOADING ANIMATIONS
@@ -436,7 +420,7 @@ body {
   animation: shimmer 2s ease-in-out infinite;
 }
 
-/* Loading Page Container */
+/* Loading Page Container - Simple, no fancy animations */
 .loading-page-container {
   display: flex;
   flex-direction: column;
@@ -444,11 +428,6 @@ body {
   justify-content: center;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-}
-
-/* Loading Logo Animation */
-.loading-logo {
-  animation: float 2s ease-in-out infinite;
 }
 
 /* Loading Dots */
@@ -734,18 +713,12 @@ body {
 }
 
 .content-enter {
-  animation: contentEnter 0.5s ease-out forwards;
+  /* No animation - instant appearance */
 }
 
 @keyframes contentEnter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 1; }
+  to { opacity: 1; }
 }
 
 
@@ -1533,31 +1506,35 @@ body {
 }
 
 /* --- CHECKOUT CSS SCOPED --- */
-.chk-bg { background-color: #ffffff; min-height: calc(100vh - 120px); display: flex; justify-content: center; align-items: center; }
-.chk-container { width: 100%; max-width: 480px; padding: 20px 25px 50px 25px; }
-.chk-divider { height: 1px; background-color: #f0f0f0; margin: 30px 0; border: none; }
-.chk-section-header { font-size: 0.8rem; font-weight: 700; color: #222; margin-bottom: 20px; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-.chk-section-header i { font-size: 1.1rem; color: #16a34a; font-weight: normal; }
-.chk-input-wrapper { position: relative; margin-bottom: 20px; }
-.chk-input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #a0a0a0; font-size: 1.1rem; transition: color 0.3s ease; z-index: 2; pointer-events: none; }
-.chk-clean-input { width: 100%; padding: 13px 15px 13px 44px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; color: #222; background: transparent; outline: none; transition: border-color 0.3s ease; }
-.chk-clean-input:focus { border-color: #16a34a; box-shadow: none; }
-.chk-input-label { position: absolute; left: 44px; top: 50%; transform: translateY(-50%); background-color: transparent; color: #999; font-size: 0.95rem; pointer-events: none; transition: all 0.2s ease; }
-.chk-input-label.active-label { top: 0; transform: translateY(-50%); background-color: #ffffff; padding: 0 4px; font-weight: 600; font-size: 0.8rem; color: #16a34a; z-index: 5; }
+.chk-bg { background-color: #f9fafb; min-height: calc(100vh - 120px); display: flex; justify-content: center; align-items: flex-start; padding-top: 16px; }
+.chk-container { width: 100%; max-width: 480px; padding: 0 16px 50px 16px; }
+.chk-section { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+@keyframes sectionFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.chk-divider { height: 1px; background-color: #f0f0f0; margin: 24px 0; border: none; }
+.chk-section-header { font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; }
+.chk-section-header i { font-size: 20px; color: #16a34a; }
+.chk-input-wrapper { position: relative; margin-bottom: 16px; }
+.chk-input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 18px; transition: color 0.2s ease; z-index: 2; pointer-events: none; }
+.chk-clean-input { width: 100%; padding: 14px 15px 14px 44px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; color: #111827; background: #fafafa; outline: none; transition: all 0.2s ease; }
+.chk-clean-input:focus { border-color: #16a34a; background: white; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+.chk-input-label { position: absolute; left: 44px; top: 50%; transform: translateY(-50%); background-color: transparent; color: #9ca3af; font-size: 15px; pointer-events: none; transition: all 0.2s ease; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; }
+.chk-input-label.active-label { top: 0; transform: translateY(-50%); background-color: #ffffff; padding: 0 6px; font-weight: 600; font-size: 12px; color: #16a34a; z-index: 5; }
 .chk-clean-input:focus ~ .chk-input-icon { color: #16a34a; }
-.chk-row-inputs { display: flex; gap: 15px; }
+.chk-row-inputs { display: flex; gap: 12px; }
 .chk-row-inputs .chk-input-wrapper { flex: 1; }
-.chk-product-row { display: flex; align-items: center; margin-bottom: 15px; gap: 0; }
-.chk-prod-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #f9f9f9; margin-right: 10px; flex-shrink: 0; border: 1px solid #e5e7eb; }
-.chk-prod-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.chk-prod-info h4 { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; line-height: 1.3; color:#666;}
-.chk-prod-info span { font-size: 0.8rem; color: #888; font-weight: 400; }
-.chk-prod-price { margin-left: auto; font-weight: 500; font-size: 0.85rem; color:#666;}
-.chk-cost-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #666; }
-.chk-total-row { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 1.1rem; font-weight: 700; color: #222; }
-.chk-coupon-wrapper { display: flex; gap: 10px; margin-top: 25px; }
+.chk-product-row { display: flex; align-items: center; padding: 14px 0; gap: 0; border-bottom: 1px solid #f3f4f6; transition: background 0.2s ease; }
+.chk-product-row:last-child { border-bottom: none; }
+.chk-product-row:hover { background: #f9fafb; margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 8px; }
+.chk-prod-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; background: #f9f9f9; margin-right: 12px; flex-shrink: 0; border: 1px solid #e5e7eb; }
+.chk-prod-info { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.chk-prod-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; color: #374151; font-family: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif; }
+.chk-prod-info span { font-size: 12px; color: #9ca3af; font-weight: 400; }
+.chk-prod-price { margin-left: auto; font-weight: 600; font-size: 14px; color: #111827; white-space: nowrap; }
+.chk-cost-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #6b7280; }
+.chk-total-row { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e5e7eb; font-size: 18px; font-weight: 700; color: #111827; }
+.chk-coupon-wrapper { display: flex; gap: 10px; margin-top: 16px; }
 .chk-coupon-wrapper .chk-input-wrapper { margin-bottom: 0; flex: 1; }
-.chk-btn-apply { background: transparent; border: 1px solid #16a34a; color: #16a34a; border-radius: 8px; padding: 0 24px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.chk-btn-apply { background: transparent; border: 2px solid #16a34a; color: #16a34a; border-radius: 12px; padding: 0 20px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
 .chk-btn-apply:hover { background: #16a34a; color: white; }
 .chk-pay-content { margin-bottom: 15px; padding-left: 5px; }
 .chk-instruction { font-size: 0.95rem; color: #666; line-height: 1.6; }

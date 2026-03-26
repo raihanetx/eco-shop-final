@@ -6,6 +6,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import Checkout from '@/components/cart/Checkout'
 import { useCartStore, useOrderStore, useShopStore } from '@/store'
 import { useAppRouter } from '@/hooks/useAppRouter'
+import { CheckoutSkeleton } from '@/components/ui/skeleton'
 
 function CheckoutContent() {
   const router = useRouter()
@@ -208,13 +209,9 @@ function CheckoutContent() {
     oldPrice: item.oldPrice || item.price,
   }))
 
-  // Show loading while cart is hydrating from localStorage
+  // Show skeleton while cart is hydrating from localStorage
   if (!isHydrated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="w-full h-full absolute inset-0 skeleton-shimmer" />
-      </div>
-    )
+    return <CheckoutSkeleton />
   }
 
   return (
@@ -231,11 +228,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="w-full h-full absolute inset-0 skeleton-shimmer" />
-      </div>
-    }>
+    <Suspense fallback={<CheckoutSkeleton />}>
       <MainLayout>
         <CheckoutContent />
       </MainLayout>

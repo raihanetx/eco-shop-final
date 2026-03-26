@@ -1,9 +1,7 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
 import { CartItem, ViewType } from '@/types'
 import { roundPrice } from '@/lib/utils'
-import { cartItemAdd, staggerContainer, staggerItem, fadeInUp, buttonTap, counterChange } from '@/lib/animations'
 
 // Maximum quantity per item in cart
 const MAX_QUANTITY = 10
@@ -20,11 +18,8 @@ interface CartProps {
 export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantity, onRemoveItem, freeDeliveryMin = 500 }: CartProps) {
   // Handle quantity change with validation
   const handleQuantityChange = (index: number, newQuantity: number) => {
-    // Validate: minimum 1, maximum MAX_QUANTITY
     if (newQuantity < 1) return
-    if (newQuantity > MAX_QUANTITY) {
-      newQuantity = MAX_QUANTITY
-    }
+    if (newQuantity > MAX_QUANTITY) newQuantity = MAX_QUANTITY
     
     if (onUpdateQuantity) {
       onUpdateQuantity(cartItems[index].id, newQuantity)
@@ -49,36 +44,18 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
 
   if (cartItems.length === 0) {
     return (
-      <motion.div 
-        className="cart-clean-wrapper"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.1 }}
-      >
+      <div className="cart-clean-wrapper">
         <div className="cart-clean-container">
-          <motion.div 
-            className="cart-clean-empty"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            <motion.i 
-              className="ri-shopping-cart-2-line" 
-              style={{ fontSize: '64px', color: '#d1d5db', display: 'block', marginBottom: '16px' }}
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            />
+          <div className="cart-clean-empty">
+            <i className="ri-shopping-cart-2-line" style={{ fontSize: '64px', color: '#d1d5db', display: 'block', marginBottom: '16px' }} />
             <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#111', marginBottom: '8px', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>
               আপনার কার্ট খালি
             </h2>
             <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>
               শপিং শুরু করতে পণ্য যোগ করুন
             </p>
-            <motion.button 
+            <button 
               onClick={() => setView('shop')}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.1 }}
               style={{
                 padding: '12px 24px',
                 background: '#16a34a',
@@ -91,10 +68,10 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
               }}
             >
               শপিং করুন
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         </div>
-      </motion.div>
+      </div>
     )
   }
 
@@ -104,123 +81,59 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
   const remainingForFreeDelivery = freeDeliveryMin - subtotal
 
   return (
-    <motion.div 
-      className="cart-clean-wrapper"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.1 }}
-    >
+    <div className="cart-clean-wrapper">
       <div className="cart-clean-container">
         
-        {/* ITEM LIST WITH STAGGERED ANIMATION */}
-        <motion.div 
-          className="cart-clean-list"
-          variants={staggerContainer}
-          initial="initial"
-          animate="animate"
-        >
-          <AnimatePresence mode="popLayout">
-            {cartItems.map((item, index) => {
-              const currentQty = Math.min(item.quantity || 1, MAX_QUANTITY)
-              const isAtMax = currentQty >= MAX_QUANTITY
-              
-              return (
-                <motion.div 
-                  key={item.id} 
-                  className="cart-clean-item"
-                  variants={cartItemAdd}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  layout
-                  layoutId={`cart-item-${item.id}`}
-                >
-                  <motion.img 
-                    src={item.img} 
-                    className="cart-clean-img" 
-                    alt={item.name}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ duration: 0.1 }}
-                  />
-                  <div className="cart-clean-info">
-                    <div className="cart-clean-name-row">
-                      <span className="cart-clean-name">{item.name}</span> 
-                      <span className="cart-clean-weight">({item.weight})</span>
-                    </div>
-                    <div className="cart-clean-action-row">
-                      <motion.div 
-                        className="cart-clean-price"
-                        key={subtotal}
-                        variants={counterChange}
-                        initial="initial"
-                        animate="change"
+        {/* ITEM LIST */}
+        <div className="cart-clean-list">
+          {cartItems.map((item, index) => {
+            const currentQty = Math.min(item.quantity || 1, MAX_QUANTITY)
+            const isAtMax = currentQty >= MAX_QUANTITY
+            
+            return (
+              <div key={item.id} className="cart-clean-item">
+                <img src={item.img} className="cart-clean-img" alt={item.name} />
+                <div className="cart-clean-info">
+                  <div className="cart-clean-name-row">
+                    <span className="cart-clean-name">{item.name}</span> 
+                    <span className="cart-clean-weight">({item.weight})</span>
+                  </div>
+                  <div className="cart-clean-action-row">
+                    <div className="cart-clean-price">TK {roundPrice(item.price * currentQty)}</div>
+                    <div className="cart-clean-qty-group">
+                      <button 
+                        className="cart-clean-qbtn" 
+                        onClick={() => handleQuantityChange(index, currentQty - 1)}
+                        disabled={currentQty <= 1}
+                        style={{ opacity: currentQty <= 1 ? 0.5 : 1 }}
                       >
-                        TK {roundPrice(item.price * currentQty)}
-                      </motion.div>
-                      <div className="cart-clean-qty-group">
-                        <motion.button 
-                          className="cart-clean-qbtn" 
-                          onClick={() => handleQuantityChange(index, currentQty - 1)}
-                          disabled={currentQty <= 1}
-                          style={{ opacity: currentQty <= 1 ? 0.5 : 1 }}
-                          whileTap={{ scale: 0.9 }}
-                          transition={{ duration: 0.1 }}
-                        >
-                          <i className="ri-subtract-line"></i>
-                        </motion.button>
-                        <motion.span 
-                          className="cart-clean-qval"
-                          key={currentQty}
-                          initial={{ opacity: 0.5, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                        >
-                          {currentQty}
-                        </motion.span>
-                        <motion.button 
-                          className="cart-clean-qbtn" 
-                          onClick={() => handleQuantityChange(index, currentQty + 1)}
-                          disabled={isAtMax}
-                          style={{ opacity: isAtMax ? 0.5 : 1 }}
-                          whileTap={{ scale: 0.9 }}
-                          transition={{ duration: 0.1 }}
-                        >
-                          <i className="ri-add-line"></i>
-                        </motion.button>
-                      </div>
+                        <i className="ri-subtract-line"></i>
+                      </button>
+                      <span className="cart-clean-qval">{currentQty}</span>
+                      <button 
+                        className="cart-clean-qbtn" 
+                        onClick={() => handleQuantityChange(index, currentQty + 1)}
+                        disabled={isAtMax}
+                        style={{ opacity: isAtMax ? 0.5 : 1 }}
+                      >
+                        <i className="ri-add-line"></i>
+                      </button>
                     </div>
                   </div>
-                  <motion.button 
-                    className="cart-clean-del" 
-                    onClick={() => handleRemoveItem(index)}
-                    whileTap={{ scale: 0.9 }}
-                    transition={{ duration: 0.1 }}
-                  >
-                    <i className="ri-delete-bin-line"></i>
-                  </motion.button>
-                </motion.div>
-              )
-            })}
-          </AnimatePresence>
-        </motion.div>
+                </div>
+                <button className="cart-clean-del" onClick={() => handleRemoveItem(index)}>
+                  <i className="ri-delete-bin-line"></i>
+                </button>
+              </div>
+            )
+          })}
+        </div>
 
-        {/* SUMMARY - NO DELAY */}
-        <motion.div 
-          className="cart-clean-summary"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15 }}
-        >
+        {/* SUMMARY */}
+        <div className="cart-clean-summary">
           <div className="cart-clean-os-row">
             <span>Subtotal ({totalItems} items)</span>
-            <motion.span
-              key={subtotal}
-              initial={{ opacity: 0.5 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.1 }}
-            >
-              TK {roundPrice(subtotal)}
-            </motion.span>
+            <span>TK {roundPrice(subtotal)}</span>
           </div>
           <div className="cart-clean-os-row">
             <span>Shipping</span>
@@ -228,63 +141,25 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
           </div>
           <div className="cart-clean-os-row cart-clean-total">
             <span>Total</span>
-            <motion.span
-              key={subtotal}
-              initial={{ scale: 0.98 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            >
-              TK {roundPrice(subtotal)}
-            </motion.span>
+            <span>TK {roundPrice(subtotal)}</span>
           </div>
-        </motion.div>
+        </div>
 
-        {/* BUTTONS - NO DELAY */}
-        <motion.div 
-          className="cart-two-buttons"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15 }}
-        >
-          <motion.button 
-            className="cart-btn-continue-full" 
-            onClick={() => setView('shop')}
-            whileTap={{ scale: 0.99 }}
-            transition={{ duration: 0.1 }}
-          >
+        {/* BUTTONS */}
+        <div className="cart-two-buttons">
+          <button className="cart-btn-continue-full" onClick={() => setView('shop')}>
             <i className="ri-shopping-bag-line" style={{ marginRight: '8px' }}></i> Shopping
-          </motion.button>
-          <motion.button 
-            className="cart-btn-checkout-full" 
-            onClick={() => setView('checkout')}
-            whileTap={{ scale: 0.99 }}
-            transition={{ duration: 0.1 }}
-          >
+          </button>
+          <button className="cart-btn-checkout-full" onClick={() => setView('checkout')}>
             <i className="ri-arrow-right-line" style={{ marginRight: '8px' }}></i> Checkout
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
 
-        {/* PROMO BANNER - NO DELAY */}
-        <motion.div 
-          className="cart-clean-promo"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.15 }}
-        >
-          <motion.div 
-            className="cart-clean-promo-icon"
-            animate={{ 
-              x: [0, 5, 0],
-              rotate: [0, 5, -5, 0]
-            }}
-            transition={{ 
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut'
-            }}
-          >
+        {/* PROMO BANNER */}
+        <div className="cart-clean-promo">
+          <div className="cart-clean-promo-icon">
             <i className="ri-truck-line"></i>
-          </motion.div>
+          </div>
           <div className="cart-clean-promo-text">
             {remainingForFreeDelivery > 0 ? (
               <>
@@ -296,12 +171,11 @@ export default function Cart({ setView, cartItems, setCartItems, onUpdateQuantit
               </>
             )}
           </div>
-        </motion.div>
+        </div>
 
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// Export max quantity for use in other components
 export { MAX_QUANTITY }

@@ -374,9 +374,44 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
       </div>
       <div className="chk-container">
         {/* Order Summary Section - FIRST */}
-        <div className="chk-section" style={{ marginBottom: '24px' }}>
-          <div className="chk-section-header" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>
-            <i className="ri-shopping-bag-3-line"></i> আপনার অর্ডার সারসংক্ষেপ
+        <div className="chk-section" style={{ marginBottom: '16px' }}>
+          {/* Section Header */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            marginBottom: '20px',
+            paddingBottom: '16px',
+            borderBottom: '1px solid #f3f4f6'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <i className="ri-shopping-bag-3-line" style={{ color: 'white', fontSize: '20px' }}></i>
+              </div>
+              <div>
+                <h3 style={{ 
+                  fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", 
+                  fontSize: '18px', 
+                  fontWeight: 700, 
+                  color: '#111827',
+                  margin: 0
+                }}>অর্ডার সামারি</h3>
+                <p style={{ 
+                  fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", 
+                  fontSize: '12px', 
+                  color: '#9ca3af',
+                  margin: 0
+                }}>{cartItems.length}টি পণ্য</p>
+              </div>
+            </div>
           </div>
         
           {cartItems.length > 0 ? (
@@ -387,145 +422,396 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
               )
               
               return (
-                <div key={index} className="chk-product-row">
-                  <img src={item.img} alt={item.name} className="chk-prod-img" />
-                  <div className="chk-prod-info">
-                    <h4>
-                      {item.name} ({item.weight})
+                <div key={index} style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '16px 0',
+                  borderBottom: index < cartItems.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  gap: '12px'
+                }}>
+                  {/* Product Image */}
+                  <div style={{
+                    width: '70px',
+                    height: '70px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    background: '#f9fafb',
+                    border: '1px solid #f3f4f6',
+                    flexShrink: 0
+                  }}>
+                    <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{
+                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#1f2937',
+                      margin: '0 0 4px 0',
+                      lineHeight: 1.4
+                    }}>
+                      {item.name}
+                    </h4>
+                    <p style={{
+                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                      fontSize: '12px',
+                      color: '#9ca3af',
+                      margin: '0 0 10px 0'
+                    }}>
+                      {item.weight}
                       {couponApplies && (
                         <span style={{
-                          display: 'inline-block',
-                          width: '6px',
-                          height: '6px',
-                          background: '#16a34a',
-                          borderRadius: '50%',
-                          marginLeft: '6px',
-                          verticalAlign: 'middle'
-                        }}></span>
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          marginLeft: '8px',
+                          color: '#16a34a',
+                          fontWeight: 500
+                        }}>
+                          <i className="ri-price-tag-3-line" style={{ fontSize: '12px' }}></i>
+                          কুপন প্রযোজ্য
+                        </span>
                       )}
-                    </h4>
-                    {/* Quantity controls */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-                      <button
-                        onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))}
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '6px',
-                          border: '1px solid #e2e8f0',
-                          background: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          color: '#64748b',
-                          fontSize: '14px'
-                        }}
-                      ><i className="ri-subtract-line"></i></button>
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151', minWidth: '20px', textAlign: 'center' }}>{item.quantity || 1}</span>
-                      <button
-                        onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, (item.quantity || 1) + 1)}
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          borderRadius: '6px',
-                          border: '1px solid #e2e8f0',
-                          background: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          color: '#64748b',
-                          fontSize: '14px'
-                        }}
-                      ><i className="ri-add-line"></i></button>
+                    </p>
+                    
+                    {/* Quantity Controls */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ 
+                        fontSize: '12px', 
+                        color: '#6b7280', 
+                        fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                        fontWeight: 500
+                      }}>পরিমাণ:</span>
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '2px',
+                        background: '#f9fafb',
+                        borderRadius: '8px',
+                        padding: '2px'
+                      }}>
+                        <button
+                          onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))}
+                          style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            color: '#374151',
+                            fontSize: '16px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                            transition: 'all 0.15s ease'
+                          }}
+                        ><i className="ri-subtract-line"></i></button>
+                        <span style={{ 
+                          fontSize: '14px', 
+                          fontWeight: 600, 
+                          color: '#111827', 
+                          minWidth: '32px', 
+                          textAlign: 'center',
+                          fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+                        }}>{item.quantity || 1}</span>
+                        <button
+                          onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, (item.quantity || 1) + 1)}
+                          style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            color: '#374151',
+                            fontSize: '16px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                            transition: 'all 0.15s ease'
+                          }}
+                        ><i className="ri-add-line"></i></button>
+                      </div>
                     </div>
                   </div>
-                  <div className="chk-prod-price">TK {Math.round(item.price * (item.quantity || 1))}</div>
-                  {onRemoveItem && (
-                    <button 
-                      onClick={() => onRemoveItem(item.id)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#dc2626',
-                        cursor: 'pointer',
-                        padding: '4px',
-                        marginLeft: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <i className="ri-delete-bin-line" style={{fontSize: '16px'}}></i>
-                    </button>
-                  )}
+                  
+                  {/* Price & Delete */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                    <span style={{
+                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      color: '#111827'
+                    }}>TK {Math.round(item.price * (item.quantity || 1))}</span>
+                    {onRemoveItem && (
+                      <button 
+                        onClick={() => onRemoveItem(item.id)}
+                        style={{
+                          background: '#fef2f2',
+                          border: 'none',
+                          color: '#dc2626',
+                          cursor: 'pointer',
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px',
+                          fontSize: '12px',
+                          fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                          fontWeight: 500,
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        <i className="ri-delete-bin-line"></i>
+                        সরান
+                      </button>
+                    )}
+                  </div>
                 </div>
               )
             })
           ) : (
-            <div className="chk-product-row" style={{justifyContent: 'center', padding: '20px', color: '#9ca3af'}}>
-              <div className="chk-prod-info" style={{textAlign: 'center'}}>
-                <i className="ri-shopping-cart-line" style={{fontSize: '24px', display: 'block', marginBottom: '8px'}}></i>
-                <h4 style={{color: '#64748b', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"}}>কার্টে কোনো পণ্য নেই</h4>
-                <span style={{fontSize: '12px', fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"}}>শপ থেকে পণ্য যোগ করুন</span>
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              color: '#9ca3af'
+            }}>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: '#f3f4f6',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px'
+              }}>
+                <i className="ri-shopping-cart-line" style={{ fontSize: '28px', color: '#9ca3af' }}></i>
               </div>
+              <h4 style={{ 
+                color: '#64748b', 
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                fontSize: '16px',
+                fontWeight: 600,
+                margin: '0 0 4px 0'
+              }}>কার্টে কোনো পণ্য নেই</h4>
+              <span style={{ 
+                fontSize: '13px', 
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                color: '#9ca3af'
+              }}>শপ থেকে পণ্য যোগ করুন</span>
             </div>
           )}
           
-          <div className="border-t border-dashed border-gray-300 pt-3 mt-4 space-y-2 text-sm">
-            <div className="flex justify-between text-gray-500">
-              <span style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>Subtotal</span>
-              <span>TK {Math.round(subtotal)}</span>
+          {/* Price Summary */}
+          <div style={{ 
+            marginTop: '20px', 
+            paddingTop: '20px', 
+            borderTop: '1px solid #f3f4f6' 
+          }}>
+            {/* Subtotal */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              marginBottom: '12px',
+              alignItems: 'center'
+            }}>
+              <span style={{ 
+                fontSize: '14px', 
+                color: '#6b7280', 
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" 
+              }}>সাবটোটাল</span>
+              <span style={{ 
+                fontWeight: 600, 
+                color: '#374151', 
+                fontSize: '14px'
+              }}>TK {Math.round(subtotal)}</span>
             </div>
             
-            <div className="flex justify-between text-gray-500">
-              <span style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>Delivery Charge</span>
-              <span>{calculatedDelivery > 0 ? `TK ${Math.round(calculatedDelivery)}` : 'FREE'}</span>
+            {/* Delivery */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              marginBottom: '12px',
+              alignItems: 'center'
+            }}>
+              <span style={{ 
+                fontSize: '14px', 
+                color: '#6b7280', 
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" 
+              }}>ডেলিভারি চার্জ</span>
+              <span style={{ 
+                fontWeight: 600, 
+                color: calculatedDelivery === 0 ? '#16a34a' : '#374151', 
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                {calculatedDelivery === 0 ? (
+                  <>
+                    <i className="ri-gift-line" style={{ fontSize: '14px' }}></i>
+                    ফ্রি!
+                  </>
+                ) : `TK ${Math.round(calculatedDelivery)}`}
+              </span>
             </div>
 
+            {/* Discount */}
             {validatedCoupon && discount > 0 && (
-              <div className="flex justify-between text-red-500">
-                <span style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>Coupon ({validatedCoupon.code})</span>
-                <span>- TK {Math.round(discount)}</span>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                marginBottom: '12px',
+                alignItems: 'center',
+                background: '#fef2f2',
+                padding: '10px 12px',
+                borderRadius: '8px'
+              }}>
+                <span style={{ 
+                  fontSize: '13px', 
+                  color: '#dc2626', 
+                  fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <i className="ri-coupon-3-line"></i>
+                  কুপন ({validatedCoupon.code})
+                </span>
+                <span style={{ 
+                  fontWeight: 600, 
+                  color: '#dc2626', 
+                  fontSize: '14px'
+                }}>- TK {Math.round(discount)}</span>
               </div>
             )}
 
-            <div className="flex justify-between items-center pt-3 mt-2 border-t border-gray-200">
-              <span className="text-base font-bold text-gray-900" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>Total Amount</span>
-              <span className="text-xl font-bold text-green-700">TK {Math.round(total)}</span>
+            {/* Total */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              paddingTop: '16px', 
+              marginTop: '4px', 
+              borderTop: '1px dashed #e5e7eb',
+              background: '#f9fafb',
+              margin: '0 -20px -20px -20px',
+              padding: '16px 20px 20px 20px',
+              borderRadius: '0 0 16px 16px'
+            }}>
+              <span style={{ 
+                fontSize: '16px', 
+                fontWeight: 700, 
+                color: '#111827', 
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" 
+              }}>মোট টাকা</span>
+              <span style={{ 
+                fontSize: '22px', 
+                fontWeight: 800, 
+                color: '#16a34a' 
+              }}>TK {Math.round(total)}</span>
             </div>
           </div>
           
-          <div className="chk-coupon-wrapper">
-            <div className="chk-input-wrapper">
-              <i className="ri-ticket-2-line chk-input-icon"></i>
-              <input type="text" id="coupon" className="chk-clean-input"
-                value={couponCode}
-                onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setValidatedCoupon(null); setCouponError(null); }}
-                onFocus={() => setFocusedField('coupon')}
-                onBlur={() => setFocusedField(null)} />
-              <label htmlFor="coupon" className={`chk-input-label ${focusedField === 'coupon' || couponCode ? 'active-label' : ''}`} style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>কুপন কোড (Optional)</label>
+          {/* Coupon Section */}
+          <div style={{ 
+            marginTop: '20px',
+            paddingTop: '20px',
+            borderTop: '1px solid #f3f4f6'
+          }}>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <i className="ri-ticket-2-line" style={{ 
+                  position: 'absolute', 
+                  left: '14px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  color: '#9ca3af',
+                  fontSize: '18px'
+                }}></i>
+                <input 
+                  type="text" 
+                  placeholder="কুপন কোড লিখুন"
+                  className="chk-clean-input"
+                  value={couponCode}
+                  onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setValidatedCoupon(null); setCouponError(null); }}
+                  onFocus={() => setFocusedField('coupon')}
+                  onBlur={() => setFocusedField(null)}
+                  style={{
+                    width: '100%',
+                    padding: '14px 15px 14px 44px',
+                    border: validatedCoupon ? '2px solid #16a34a' : '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    fontSize: '14px',
+                    fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                    background: validatedCoupon ? '#f0fdf4' : '#fafafa',
+                    outline: 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                />
+              </div>
+              <button 
+                onClick={handleApplyCoupon} 
+                disabled={isValidatingCoupon} 
+                style={{ 
+                  fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
+                  background: validatedCoupon ? '#16a34a' : '#111827',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '0 20px',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {isValidatingCoupon ? (
+                  <div style={{ 
+                    width: '16px', 
+                    height: '16px', 
+                    border: '2px solid white', 
+                    borderTopColor: 'transparent', 
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></div>
+                ) : (
+                  <>
+                    <i className="ri-check-line"></i>
+                    Apply
+                  </>
+                )}
+              </button>
             </div>
-            <button 
-              className="chk-btn-apply" 
-              onClick={handleApplyCoupon} 
-              disabled={isValidatingCoupon} 
-              style={{ 
-                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif",
-                background: 'transparent',
-                color: validatedCoupon ? '#16a34a' : '#9ca3af',
-                border: validatedCoupon ? '2px solid #16a34a' : '1px solid #9ca3af',
-                cursor: 'pointer'
-              }}
-            >
-              {isValidatingCoupon ? '...' : 'Apply'}
-            </button>
+            {validatedCoupon && (
+              <div style={{
+                marginTop: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#16a34a',
+                fontSize: '12px',
+                fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+              }}>
+                <i className="ri-checkbox-circle-fill"></i>
+                কুপন সফলভাবে প্রয়োগ হয়েছে!
+              </div>
+            )}
           </div>
         </div>
 
         {/* Customer Information Section - AFTER Order Summary */}
-        <div className="chk-section" style={{ marginBottom: '24px' }}>
+        <div className="chk-section" style={{ marginBottom: '16px' }}>
           <div className="chk-section-header" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>
             <i className="ri-user-line"></i> আপনার তথ্য দিন
           </div>
@@ -583,7 +869,7 @@ export default function Checkout({ setView, onConfirm, cartItems = [], deliveryC
         </div>
 
         {/* Payment Section */}
-        <div className="chk-section" style={{ marginBottom: '24px' }}>
+        <div className="chk-section" style={{ marginBottom: '16px' }}>
           <div className="chk-section-header" style={{ fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif", fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>
             <i className="ri-secure-payment-line"></i> পেমেন্ট পদ্ধতি
           </div>

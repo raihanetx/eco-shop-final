@@ -198,46 +198,47 @@ export const modalSlideUp: Variants = {
 }
 
 // === LIST STAGGER ANIMATIONS ===
+// DISABLED for smooth page transitions - items appear instantly
 export const staggerContainer: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.02, // Faster stagger
-      delayChildren: 0.02, // Minimal delay
+      staggerChildren: 0, // No stagger
+      delayChildren: 0, // No delay
     }
   },
   exit: {
     transition: {
-      staggerChildren: 0.02,
+      staggerChildren: 0,
       staggerDirection: -1,
     }
   },
 }
 
 export const staggerItem: Variants = {
-  initial: { opacity: 0, y: 10 }, // Smaller y offset
+  initial: { opacity: 1, y: 0 }, // Start visible!
   animate: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.15 } // Faster transition
+    transition: { duration: 0 }
   },
   exit: { 
-    opacity: 0, 
-    y: -5,
-    transition: { duration: 0.1 }
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0 }
   },
 }
 
 export const staggerItemFast: Variants = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 1, y: 0 }, // Start visible
   animate: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.2 }
+    transition: { duration: 0 }
   },
   exit: { 
-    opacity: 0, 
-    transition: { duration: 0.1 }
+    opacity: 1, 
+    transition: { duration: 0 }
   },
 }
 
