@@ -197,153 +197,115 @@ export const useShopStore = create<ShopState>()(
       selectedCategory: null,
       lastFetch: 0,
 
-      // SMART: Single API call with version check for instant updates
+      // SUPER SMART: Single conditional API call for instant updates
+      // If data hasn't changed, server returns 304 (tiny response ~100 bytes)
+      // If data changed, server returns full data (~50KB)
       fetchData: async () => {
         const now = Date.now()
-        const { lastFetch, products, categories, settings } = get()
         
-        // SMART: Skip all caching when CACHE_DURATION is 0 (real-time mode)
-        if (CACHE_DURATION === 0) {
-          // Always fetch fresh data in real-time mode
-          set({ isLoading: true, error: null })
-          
-          try {
-            const response = await fetch('/api/shop-data', {
-              cache: 'no-store',
-              headers: {
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-              }
-            })
-            const result = await response.json()
-            
-            if (result.success) {
-              const variantMap: Record<number, ProductVariant[]> = {}
-              if (result.data.variantMap) {
-                Object.entries(result.data.variantMap).forEach(([id, variants]: [string, any]) => {
-                  variantMap[parseInt(id)] = variants.map((v: any) => ({
-                    id: v.id,
-                    name: v.name,
-                    stock: v.stock,
-                    initialStock: v.stock,
-                    price: v.price,
-                    discount: v.discount || '0%',
-                    discountType: v.discountType || 'pct',
-                    discountValue: v.discountValue || 0,
-                    productId: parseInt(id),
-                  }))
-                })
-              }
-
-              set({
-                categories: result.data.categories,
-                products: result.data.products,
-                settings: result.data.settings,
-                variantMap: variantMap,
-                settingsLoaded: true,
-                isLoading: false,
-                lastFetch: now,
-              })
-            } else {
-              set({ error: result.error || 'Failed to load', isLoading: false })
-            }
-          } catch (error) {
-            console.error('Shop data fetch error:', error)
-            set({ error: 'Failed to load data', isLoading: false })
-          }
-          return
-        }
+        // Get cached data
+        const cachedData = memoryCacheData
         
         // ============================================
-        // SMART: Check if server has newer data (INSTANT UPDATE FIX!)
+        // STEP 1: Check memory cache (instant - no network!)
+        // Only use if within cache duration
         // ============================================
-        let serverLastModified = 0
-        try {
-          // Lightweight check - just gets timestamp, not full data
-          const versionResponse = await fetch('/api/shop-data/version', {
-            cache: 'no-store',
-          })
-          const versionData = await versionResponse.json()
-          if (versionData.success) {
-            serverLastModified = versionData.lastModified || 0
-          }
-        } catch {
-          // If version check fails, continue with normal flow
-        }
-        
-        // Get cached lastModified
-        const cachedLastModified = memoryCacheData?.lastModified || 0
-        
-        // SMART: Use cache ONLY if:
-        // 1. We have cached data
-        // 2. Cache is within time limit
-        // 3. Server doesn't have newer data (lastModified matches)
-        if (memoryCacheData && 
-            now - memoryCacheData.lastFetch < CACHE_DURATION &&
-            serverLastModified <= cachedLastModified) {
+        if (cachedData && now - cachedData.lastFetch < CACHE_DURATION) {
+          // We have fresh cache - use it immediately (fastest!)
           set({
-            categories: memoryCacheData.categories,
-            products: memoryCacheData.products,
-            settings: memoryCacheData.settings,
-            variantMap: memoryCacheData.variantMap,
+            categories: cachedData.categories,
+            products: cachedData.products,
+            settings: cachedData.settings,
+            variantMap: cachedData.variantMap,
             isLoading: false,
             settingsLoaded: true,
           })
           return
         }
         
-        // SMART: Check localStorage cache (only if server doesn't have newer data)
-        if (typeof window !== 'undefined' && serverLastModified <= cachedLastModified) {
+        // ============================================
+        // STEP 2: Memory cache expired or missing
+        // Make conditional request to server
+        // ============================================
+        
+        // Try to get localStorage cache as backup
+        let localCacheData: typeof memoryCacheData = null
+        if (typeof window !== 'undefined') {
           try {
             const raw = localStorage.getItem(`cache_${LOCAL_CACHE_KEY}`)
             if (raw) {
               const cached = JSON.parse(raw)
-              if (cached.expiry && now < cached.expiry && cached.data) {
-                // Check if localStorage cache has lastModified
-                const localLastModified = cached.data.lastModified || 0
-                if (serverLastModified <= localLastModified) {
-                  memoryCacheData = cached.data
-                  set({
-                    categories: cached.data.categories,
-                    products: cached.data.products,
-                    settings: cached.data.settings,
-                    variantMap: cached.data.variantMap,
-                    isLoading: false,
-                    settingsLoaded: true,
-                  })
-                  return
-                }
+              if (cached.data) {
+                localCacheData = cached.data
               }
             }
           } catch {
-            // Cache read failed, continue to fetch
+            // Ignore errors
           }
         }
         
-        // If we have stale data, show it immediately then refresh in background
-        const hasData = products.length > 0 || categories.length > 0
+        // Use the best cache we have (memory or localStorage)
+        const bestCache = cachedData || localCacheData
+        const bestLastModified = bestCache?.lastModified || 0
         
-        if (hasData && serverLastModified <= cachedLastModified) {
-          // Show existing data, don't show loading spinner
-          if (now - lastFetch < CACHE_DURATION) {
-            return // Already fresh enough
-          }
+        // Show cached data immediately if we have it (optimistic UI)
+        if (bestCache) {
+          set({
+            categories: bestCache.categories,
+            products: bestCache.products,
+            settings: bestCache.settings,
+            variantMap: bestCache.variantMap,
+            isLoading: false,
+            settingsLoaded: true,
+          })
         } else {
-          // Server has newer data or no cached data - show loading
           set({ isLoading: true, error: null })
         }
 
         try {
-          // SINGLE API CALL - lightning fast!
-          const response = await fetch('/api/shop-data', {
+          // ============================================
+          // SUPER SMART: Conditional request!
+          // Send our cached timestamp to server
+          // ============================================
+          const url = bestLastModified > 0 
+            ? `/api/shop-data?ifModifiedSince=${bestLastModified}`
+            : '/api/shop-data'
+            
+          const response = await fetch(url, {
             cache: 'no-store',
             headers: {
               'Cache-Control': 'no-cache',
             }
           })
+          
+          // ============================================
+          // CASE 1: 304 NOT MODIFIED - Cached data is still valid!
+          // ============================================
+          if (response.status === 304) {
+            // Server says: "Your cache is still valid!"
+            // Just update our cache timestamp
+            if (bestCache) {
+              memoryCacheData = { ...bestCache, lastFetch: now }
+            }
+            return // UI already showing cached data
+          }
+          
           const result = await response.json()
           
-          if (result.success) {
+          // ============================================
+          // CASE 2: notModified flag - Cached data is valid
+          // ============================================
+          if (result.notModified) {
+            if (bestCache) {
+              memoryCacheData = { ...bestCache, lastFetch: now }
+            }
+            return
+          }
+          
+          // ============================================
+          // CASE 3: FRESH DATA - Server has newer data!
+          // ============================================
+          if (result.success && result.data) {
             // Use variantMap from API (includes discount info)
             const variantMap: Record<number, ProductVariant[]> = {}
             if (result.data.variantMap) {
@@ -362,7 +324,7 @@ export const useShopStore = create<ShopState>()(
               })
             }
 
-            const lastModified = result.lastModified || serverLastModified || now
+            const lastModified = result.lastModified || now
             
             const newData = {
               categories: result.data.categories,
@@ -402,7 +364,10 @@ export const useShopStore = create<ShopState>()(
           }
         } catch (error) {
           console.error('Shop data fetch error:', error)
-          set({ error: 'Failed to load data', isLoading: false })
+          // If we have cached data, keep showing it even on error
+          if (!bestCache) {
+            set({ error: 'Failed to load data', isLoading: false })
+          }
         }
       },
 

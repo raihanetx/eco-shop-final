@@ -53,13 +53,38 @@ function cleanImageUrl(url: string | null | undefined): string {
   return url
 }
 
-// GET /api/shop-data - SMART: Global cache + parallel queries + NO base64
-export async function GET() {
+// GET /api/shop-data - SMART: Conditional fetching + Global cache + parallel queries
+export async function GET(request: Request) {
   const now = Date.now()
+  const url = new URL(request.url)
+  
+  // ============================================
+  // SMART: Conditional Request Support
+  // Client sends their cached lastModified
+  // If data hasn't changed, return 304 (super fast!)
+  // ============================================
+  const clientLastModified = parseInt(url.searchParams.get('ifModifiedSince') || '0')
+  const serverLastModified = getShopDataLastModified()
+  
+  // SMART: If client has latest data, return 304 NOT MODIFIED (tiny response!)
+  if (clientLastModified > 0 && clientLastModified >= serverLastModified) {
+    return NextResponse.json({
+      success: true,
+      notModified: true,
+      lastModified: serverLastModified,
+      message: 'Data not modified - use cache'
+    }, {
+      status: 304,
+      headers: {
+        'Cache-Control': 'no-store',
+        'X-Data-Status': 'not-modified'
+      }
+    })
+  }
   
   // Check global cache
   const cached = getCachedShopData()
-  const lastModified = getShopDataLastModified()
+  const lastModified = serverLastModified
   
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
     return NextResponse.json({
