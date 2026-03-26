@@ -527,28 +527,162 @@ export default function ProductDetail({ setView, addToCart }: ProductDetailProps
             <i className="ri-flashlight-fill" style={{ fontSize: '18px' }}></i> ক্যাশ অন ডেলিভারিতে অর্ডার করুন
           </button>
 
-          {/* Line 3: Direct Order via Call/WhatsApp - Only show if phone is configured */}
+          {/* Line 3: Direct Order via Call/WhatsApp - For users not comfortable with online ordering */}
           {settings.phoneNumber && (
             <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column',
-              alignItems: 'center', 
-              gap: '10px', 
-              padding: '14px', 
-              background: '#f0fdf4', 
-              borderRadius: '12px', 
-              border: '1px solid #86efac' 
+              marginTop: '8px',
+              background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', 
+              borderRadius: '14px', 
+              border: '1px solid #fbbf24',
+              padding: '16px',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <span style={{ fontSize: '13px', color: '#166534', fontWeight: 600, fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif" }}>
-                সরাসরি কল বা হোয়াটসঅ্যাপে অর্ডার করুন
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <a href={`tel:+${settings.phoneNumber.replace(/\D/g, '')}`} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#16a34a', fontWeight: 700, fontSize: '14px' }}>
-                  <i className="ri-phone-fill" style={{ fontSize: '16px' }}></i> {settings.phoneNumber}
+              {/* Decorative element */}
+              <div style={{
+                position: 'absolute',
+                top: '-20px',
+                right: '-20px',
+                width: '80px',
+                height: '80px',
+                background: 'rgba(251, 191, 36, 0.3)',
+                borderRadius: '50%'
+              }}></div>
+              
+              {/* Header */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                marginBottom: '10px',
+                position: 'relative',
+                zIndex: 1
+              }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  background: '#f59e0b',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <i className="ri-customer-service-2-fill" style={{ color: 'white', fontSize: '18px' }}></i>
+                </div>
+                <div>
+                  <h4 style={{ 
+                    fontSize: '14px', 
+                    fontWeight: 700, 
+                    color: '#92400e', 
+                    margin: 0,
+                    fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+                  }}>
+                    অনলাইন অর্ডারে সমস্যা হচ্ছে?
+                  </h4>
+                  <p style={{ 
+                    fontSize: '12px', 
+                    color: '#b45309', 
+                    margin: 0,
+                    fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+                  }}>
+                    সরাসরি কল বা হোয়াটসঅ্যাপে অর্ডার করুন
+                  </p>
+                </div>
+              </div>
+              
+              {/* Contact Buttons */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '10px',
+                position: 'relative',
+                zIndex: 1
+              }}>
+                {/* Call Button */}
+                <a 
+                  href={`tel:+${settings.phoneNumber.replace(/\D/g, '')}`} 
+                  style={{ 
+                    flex: 1,
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    gap: '8px', 
+                    padding: '12px 16px',
+                    background: 'white', 
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    textDecoration: 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    background: '#16a34a',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <i className="ri-phone-fill" style={{ color: 'white', fontSize: '14px' }}></i>
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <span style={{ 
+                      display: 'block',
+                      fontSize: '11px', 
+                      color: '#6b7280',
+                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+                    }}>কল করুন</span>
+                    <span style={{ 
+                      fontSize: '13px', 
+                      fontWeight: 700, 
+                      color: '#111827'
+                    }}>{settings.phoneNumber}</span>
+                  </div>
                 </a>
-                <div style={{ width: '1px', height: '16px', background: '#86efac' }}></div>
-                <a href={`https://wa.me/${(settings.whatsappNumber || settings.phoneNumber).replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#16a34a', fontWeight: 700, fontSize: '14px' }}>
-                  <i className="ri-whatsapp-fill" style={{ fontSize: '16px' }}></i> {settings.whatsappNumber || settings.phoneNumber}
+                
+                {/* WhatsApp Button */}
+                <a 
+                  href={`https://wa.me/${(settings.whatsappNumber || settings.phoneNumber).replace(/\D/g, '')}?text=${encodeURIComponent(`হ্যালো, আমি "${sampleProduct.name}" পণ্যটি অর্ডার করতে চাই।`)}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ 
+                    flex: 1,
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    gap: '8px', 
+                    padding: '12px 16px',
+                    background: 'white', 
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    textDecoration: 'none',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    background: '#25D366',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <i className="ri-whatsapp-fill" style={{ color: 'white', fontSize: '14px' }}></i>
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <span style={{ 
+                      display: 'block',
+                      fontSize: '11px', 
+                      color: '#6b7280',
+                      fontFamily: "'Hind Siliguri', 'Noto Sans Bengali', sans-serif"
+                    }}>হোয়াটসঅ্যাপ</span>
+                    <span style={{ 
+                      fontSize: '13px', 
+                      fontWeight: 700, 
+                      color: '#111827'
+                    }}>{settings.whatsappNumber || settings.phoneNumber}</span>
+                  </div>
                 </a>
               </div>
             </div>
