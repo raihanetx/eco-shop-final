@@ -3,6 +3,7 @@ import { db, clearShopDataCache } from '@/db'
 import { variants } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
+import { broadcastStockUpdate, broadcastCacheInvalidate } from '@/app/api/realtime/route'
 
 // Helper function to parse discount string
 function parseDiscount(discountStr: string | null): { discountType: 'pct' | 'fixed'; discountValue: number } {
@@ -105,6 +106,13 @@ export async function POST(request: NextRequest) {
     // Clear shop data cache so frontend shows updated stock/variants immediately
     clearShopDataCache()
     
+    // Broadcast stock update for real-time clients
+    for (const variant of created) {
+      await broadcastStockUpdate(variant.productId, variant.stock, variant.id)
+    }
+    // Invalidate product cache
+    await broadcastCacheInvalidate(['products'])
+    
     return NextResponse.json({
       success: true,
       data: created
@@ -160,6 +168,10 @@ export async function PUT(request: NextRequest) {
     // Clear shop data cache so frontend shows updated stock/variants immediately
     clearShopDataCache()
     
+    // Broadcast stock update for real-time clients
+    await broadcastStockUpdate(updated[0].productId, updated[0].stock, updated[0].id)
+    await broadcastCacheInvalidate(['products'])
+    
     return NextResponse.json({
       success: true,
       data: updated[0]
@@ -195,6 +207,9 @@ export async function DELETE(request: NextRequest) {
       // Clear shop data cache so frontend updates immediately
       clearShopDataCache()
       
+      // Broadcast cache invalidation
+      await broadcastCacheInvalidate(['products', 'stock'])
+      
       return NextResponse.json({
         success: true,
         message: `Deleted ${deleted.length} variants`
@@ -221,6 +236,9 @@ export async function DELETE(request: NextRequest) {
     
     // Clear shop data cache so frontend updates immediately
     clearShopDataCache()
+    
+    // Broadcast cache invalidation
+    await broadcastCacheInvalidate(['products', 'stock'])
     
     return NextResponse.json({
       success: true,

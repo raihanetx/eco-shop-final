@@ -5,6 +5,7 @@ import { eq, and, sql, inArray } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
 import { initializeDatabase, isDatabaseReady } from '@/lib/auto-init'
 import { internalError, validationError, notFoundError } from '@/lib/api-errors'
+import { broadcastCacheInvalidate } from '@/app/api/realtime/route'
 
 // Helper function to parse discount string
 function parseDiscount(discountStr: string | null): { discountType: 'pct' | 'fixed'; discountValue: number } {
@@ -185,6 +186,9 @@ export async function POST(request: NextRequest) {
     
     // Clear shop data cache so frontend shows new product immediately
     clearShopDataCache()
+    
+    // Broadcast cache invalidation for real-time clients
+    await broadcastCacheInvalidate(['products', 'categories'])
 
     // Return created product
     return NextResponse.json({
@@ -254,6 +258,9 @@ export async function PUT(request: NextRequest) {
     // Clear shop data cache so frontend shows updated product immediately
     clearShopDataCache()
     
+    // Broadcast cache invalidation for real-time clients
+    await broadcastCacheInvalidate(['products'])
+    
     return NextResponse.json({
       success: true,
       data: updated[0]
@@ -320,6 +327,9 @@ export async function DELETE(request: NextRequest) {
     // Clear shop data cache so frontend updates immediately
     clearShopDataCache()
     
+    // Broadcast cache invalidation for real-time clients
+    await broadcastCacheInvalidate(['products'])
+    
     return NextResponse.json({
       success: true,
       message: 'Product deleted successfully',
@@ -379,6 +389,9 @@ export async function PATCH(request: NextRequest) {
     
     // Clear shop data cache so frontend updates immediately
     clearShopDataCache()
+    
+    // Broadcast cache invalidation for real-time clients
+    await broadcastCacheInvalidate(['products'])
     
     return NextResponse.json({
       success: true,

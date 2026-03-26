@@ -5,6 +5,7 @@ import { eq, sql, and, inArray } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
 import { checkRateLimit, rateLimitErrorResponse } from '@/lib/validation'
 import { checkHoneypot, detectBot } from '@/lib/bot-detection'
+import { broadcastNewOrder, broadcastOrderStatusChange, broadcastStockUpdate, broadcastCacheInvalidate } from '@/app/api/realtime/route'
 
 // Steadfast Courier configuration
 const STEADFAST_BASE_URL = 'https://portal.packzy.com/api/v1'
@@ -360,6 +361,11 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // Broadcast new order to all connected admin clients
+    await broadcastNewOrder(newOrder[0].id, newOrder[0])
+    // Invalidate cache for orders and stock
+    await broadcastCacheInvalidate(['orders', 'stock'])
+    
     return NextResponse.json({
       success: true,
       data: newOrder[0]
@@ -568,6 +574,12 @@ export async function PATCH(request: NextRequest) {
       .set(updateData)
       .where(eq(orders.id, id))
       .returning()
+    
+    // Broadcast order status change to connected clients
+    if (status) {
+      await broadcastOrderStatusChange(id, status)
+    }
+    await broadcastCacheInvalidate(['orders'])
     
     return NextResponse.json({
       success: true,

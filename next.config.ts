@@ -88,21 +88,123 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // STATIC DATA API - Can be cached briefly (products, categories, settings, coupons)
       {
-        // API routes - NO CACHE for real-time data updates
+        source: '/api/products',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=5, stale-while-revalidate=30',
+          },
+        ],
+      },
+      {
+        source: '/api/categories',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=10, stale-while-revalidate=60',
+          },
+        ],
+      },
+      {
+        source: '/api/settings',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=10, stale-while-revalidate=60',
+          },
+        ],
+      },
+      {
+        source: '/api/coupons',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=5, stale-while-revalidate=30',
+          },
+        ],
+      },
+      {
+        source: '/api/shop-data',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=5, stale-while-revalidate=30',
+          },
+        ],
+      },
+      // DYNAMIC DATA API - No cache (orders, stock, reviews, customers)
+      {
+        source: '/api/orders',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/api/inventory',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/api/reviews',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/api/customers',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/api/abandoned',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      // SSE endpoint - special headers for real-time connection
+      {
+        source: '/api/realtime',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-transform',
+          },
+          {
+            key: 'Connection',
+            value: 'keep-alive',
+          },
+          {
+            key: 'X-Accel-Buffering',
+            value: 'no',
+          },
+        ],
+      },
+      // Default for other API routes
+      {
         source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
+            value: 'no-store, no-cache, must-revalidate',
           },
         ],
       },
