@@ -5,7 +5,7 @@ import { eq, sql, and, inArray } from 'drizzle-orm'
 import { isApiAuthenticated, authErrorResponse } from '@/lib/api-auth'
 import { checkRateLimit, rateLimitErrorResponse } from '@/lib/validation'
 import { checkHoneypot, detectBot } from '@/lib/bot-detection'
-import { broadcastNewOrder, broadcastOrderStatusChange, broadcastStockUpdate, broadcastCacheInvalidate } from '@/app/api/realtime/route'
+import { broadcastOrderCreated, broadcastOrderStatusChanged, broadcastStockChanged } from '@/app/api/delta-sync/route'
 
 // Steadfast Courier configuration
 const STEADFAST_BASE_URL = 'https://portal.packzy.com/api/v1'
@@ -361,10 +361,19 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Broadcast new order to all connected admin clients
-    await broadcastNewOrder(newOrder[0].id, newOrder[0])
-    // Invalidate cache for orders and stock
-    await broadcastCacheInvalidate(['orders', 'stock'])
+    // DELTA SYNC: Push the new order to all connected clients (Admin dashboard)
+    await broadcastOrderCreated(newOrder[0])
+    
+    // Also notify about stock changes for the ordered items
+    for (const item of (body.items || [])) {
+      if (item.productId && item.variant) {
+        // Stock was decremented, push update
+        const variantRecord = variantLookup.get(`${item.productId}-${item.variant}`)
+        if (variantRecord) {
+          await broadcastStockChanged(item.productId, variantRecord.stock - item.qty, variantRecord.id)
+        }
+      }
+    }
     
     return NextResponse.json({
       success: true,
@@ -575,11 +584,10 @@ export async function PATCH(request: NextRequest) {
       .where(eq(orders.id, id))
       .returning()
     
-    // Broadcast order status change to connected clients
+    // DELTA SYNC: Push order status change to all connected clients
     if (status) {
-      await broadcastOrderStatusChange(id, status)
+      await broadcastOrderStatusChanged(id, status, updateData.courierStatus)
     }
-    await broadcastCacheInvalidate(['orders'])
     
     return NextResponse.json({
       success: true,

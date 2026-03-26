@@ -180,7 +180,25 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // SSE endpoint - special headers for real-time connection
+      // SSE endpoint for Delta Sync - special headers for real-time connection
+      {
+        source: '/api/delta-sync',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-transform',
+          },
+          {
+            key: 'Connection',
+            value: 'keep-alive',
+          },
+          {
+            key: 'X-Accel-Buffering',
+            value: 'no',
+          },
+        ],
+      },
+      // Legacy SSE endpoint
       {
         source: '/api/realtime',
         headers: [
